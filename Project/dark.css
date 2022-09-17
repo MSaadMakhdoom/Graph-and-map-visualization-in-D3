@@ -1,0 +1,84 @@
+/*body formatting*/
+body {
+  background-color: #181818;
+}
+
+/*base map formatting*/
+.land {
+  fill: #3A3A3A;
+}
+
+.border {
+  fill: none;
+  stroke: #606060;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/*bubble format*/
+.bubble {
+  fill: #F15B2A; /*  PS Orange */
+  fill-opacity: .5;
+  stroke: #606060;
+  stroke-width: .5px;
+}
+
+.bubble :hover {
+  stroke: #606060;
+}
+
+/*legend format*/
+.legend circle {
+  fill: none;
+  stroke: #606060;
+}
+
+.legend text {
+  fill: #777;
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
+/*hovercard formatting*/
+.tooltip {
+  position: absolute;
+  max-width: 400px;
+  height: auto;
+  padding: 5px;
+  background-color: #606060;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  pointer-events: none; /* ¡MUY IMPORTANTE! */
+  font-family: sans-serif;
+  font-size:12px;
+  color: #fff;
+}
+
+/*bar format inside hovercard*/
+.y-axis path,
+.y-axis line {
+    fill: none;
+    stroke: #fff;
+    color: #fff;
+    shape-rendering: crispEdges;
+}
+
+.x-axis path, .x-axis line{
+  display:none;
+  color: #fff;
+}
+
+.x-axis, .y-axis text {
+    font-family: sans-serif;
+    font-size: 10px;
+    color: #fff;
+    fill: #fff;
+
+}
+.bar {
+  fill: #e5e5e5;
+}

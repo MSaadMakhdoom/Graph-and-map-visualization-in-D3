@@ -1,0 +1,302 @@
+(function() {
+  var margin = { top: 0, left: 0, right: 0, bottom: 0},
+      height = 350 - margin.top - margin.bottom,
+      width = 900 - margin.left - margin.right;
+
+  var svg = d3.select("#map")
+           .append("svg")
+           .attr("height",height + margin.top + margin.bottom)
+           .attr("width", width + margin.left + margin.right)
+           .append("g")
+           .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
+
+
+
+
+
+   d3.queue()
+  .defer(d3.json,"https://skgrange.github.io/www/data/london_boroughs.json")
+  .defer(d3.csv,"london_stations.csv")
+  .defer(d3.csv,"data.csv")
+  .await(ready)
+
+
+
+
+  // var projection= d3.geoAlbers()
+  // .center([10.5, 55.2])
+  // .rotate([8, 0])
+  // .parallels([0, 15])
+  // .scale(500000)
+  // .translate([width / 2 +18500, height /2 -22000 ]);
+
+  var projection= d3.geoAlbers()
+  .center([10.5, 55.2])
+  .rotate([8, 0])
+  .parallels([0, 15])
+ .scale(59000)
+  .translate([width / 2 +2350, height /2 - 2600 ]);
+
+
+  var path = d3.geoPath()
+      .projection(projection)
+
+
+  
+function ready(error,data,london_stations,bike_data)
+{
+
+     
+  var Edges;
+
+
+
+     // console.log(data.features[0].properties.name)
+
+      //console.log(bike_data)
+
+      //console.log(london_stations)
+
+      var color = d3.scaleOrdinal()
+      .domain([1,839])
+      .range([ "#fd20ce","#b0b1d8","#f65a35","#1efbcc","#865ac7","#a2b335","#6f58a0","#b95546","#bc725d","#2af530","#605d39","#4ebd5f","#6e0c6e","#3b1ff3","#99ab0c","#1c3529","#25b27f","#629224","#3e77aa","#9102ce","#a9cd1e","#c2ab4a","#02f084","#2c437d","#0f8ad0","#7d7288","#30cb1a","#5a38da","#343a19","#2d985b","#154506","#52cba9","#22fc9e","#f28fd7","#beecba","#4206cf","#feeea6","#686ec6","#42b893","#e0b6ee","#1ecaea","#d03b12","#4b0fae","#0c94c6","#e45e2e","#a69d06","#1db748","#122b05","#d2ebb1","#d1cbe9","#94d447","#0b39e2","#09ae94","#a1dd87","#af57d1","#87786b","#f41b49","#83525d","#45b87d","#825cd9","#3acffa","#6236e2","#b4844b","#a46aad","#04be28","#c7d0e1","#d5b646","#60463b","#d87242","#45261c","#27ce5e","#1c13fc","#a37d88","#0a1ca3","#0c15dc","#393db1","#d71b07","#ef1ab4","#01d865","#fe9add","#03af21","#4a3725","#52439b","#672c6d","#3a32f8","#fe869b","#522f7d","#7d78fc","#f7cb69","#1f735a","#4fc4a5","#f31517","#02026d","#e39014","#386724","#4da3b8","#fd5322","#271b6d","#2690ae","#8417a7","#5029f9","#068d16","#f28818","#2bce4d","#61f03d","#f2dd8e","#6a0702","#ca9742","#3c0a50","#36cb35","#dbe907","#b9b908","#0e79f2","#90efa0","#5299ad","#d1e39b","#36a666","#9abcb4","#8d2ad2","#783193",
+                "#207967","#c7d658","#06b550","#bcbca3","#14ccf8","#17db9a","#e9ac59","#87435a","#93503f","#d2003d","#1b2335","#1549b6","#e88b0f","#d6e6f2","#58ba34","#66df15","#e9aa78","#2e3f12","#4b02e5","#fffbce","#859591","#57e992","#df28c9","#bae78d","#3d987f","#956a9f","#50f1e0","#1764fd","#7ae392","#08a228","#48fab5","#c2348d","#dd62bb","#161a74","#908ebf","#8a8a0e","#6dc8e0","#32bf94","#4035f8","#0538f2","#25e0c1","#08fe88","#d958ed","#7a39aa","#805f5d","#1823b1","#9956b8","#91acd6","#94d18e","#58d972","#be7e59","#10632a","#be1e9c","#9305ee","#a9e420","#0c5b97","#edceb2","#4d1347","#231a00","#edc7a6","#4dc040","#63befa","#3b3395","#443a98","#f63541","#844e38","#a29472","#30ded7","#2cf706","#cb261d","#8d8f9f","#dc4db1","#8d3925","#24f726","#15cfae","#560af0","#50cf19","#7d71af","#9563a8","#53651e","#b817ab","#1f39fb","#d9fa49","#2af984","#bf2040","#76594b","#bb8ef7","#8c49df","#c28801","#b05fe0","#1a733f","#c56335","#61fb59","#d7f436","#0d6a83","#dd136a","#be4a27","#d4dd73","#91316e","#838c26","#55d234","#86c65a","#c511dc","#dcc680","#c32543","#a4b9a5","#9cd12a","#d8f4d7","#95f3ac","#eeaf02","#056b8e","#294e67","#c25ebd","#479d4a","#59c3e2","#636735","#836513","#9f4e1e","#b064a3","#1aa997","#e67363","#b4f9ed","#4f2f39","#a38113","#d59f21","#44a9c3","#809bfb","#8453c2","#ffec37","#a4c467","#76c983","#9e59c2","#f0d2f4","#7cfe1f","#beb0be","#84a211","#60faca","#6a4905","#97e5d4","#9d73bb","#40c158","#913a82","#8b70e8","#7ee9ef","#44b9fd","#15da93","#68a158","#68a158","#68a158","#946d48","#653c37","#f2631c","#79a0f4","#05cd22","#14c6f6","#4f997c","#5d042a","#93e018","#cfa4e4","#6c7432","#e015c5","#e28b58","#ce46b1","#cfc28a","#d9969a","#d07fd1","#9d1bfa","#d0a4a9","#58c317","#48c52c","#4c4f6f","#5339ba","#2bb6e3","#8e9d4b","#f99d45","#f6c85d","#1963bd","#06f790","#63b396","#7dfacd", "#e4f56d","#e83d86","#af07b9","#bff75a","#89245c","#5a4807","#c5d598","#3eaf4d","#8c9d48","#4e47b7","#58b92b","#b0ffe3","#3245d1","#d51f8d","#d8ec33","#4a22de","#a4284a","#f59126","#3be644","#835a70","#91e78c","#8d10c8","#dde995","#157b08","#d9b557","#2d2032","#567c01","#cb2863","#853537","#eef7d2",
+                "#5e11f5","#7c9fb5","#8bae52","#93073d","#f7ccee","#4dce03","#f8cf28","#aa9faa","#9cddc7","#36d361","#3a2eef","#8ea351","#6aec77","#e944f9","#dfba1a","#c35c80","#2580bb","#bf9500","#d743c2","#d7cbf7","#d785de","#569846","#831115","#f8a1ba","#71ccca","#ca5eea","#cc7528","#dd2c6d","#6d9430","#205fb8","#e44d0b","#9b829a","#c46c5f","#e5d31e","#01554e","#94000a","#fe063a","#f1557e","#3a7594","#4bb864","#05113e","#8a21b0","#0c80f3","#2ad79f","#4dec39","#7f9bec","#f4f9d2","#58f033","#85cdf3","#3a07d3","#45c005","#fc92cc","#13f0c6","#b5f5b6","#16c3e3","#62b1a2","#073554","#9494c8","#b6c1d2","#cb6fa0","#9726ff","#817d31","#baeaf6","#17c967","#4ceaf7","#3ef1af","#e25b47","#348acb","#540a6a","#80e800","#3e5739","#5c399a","#5ae2ea","#036736","#8cca93","#984033","#f3a21b","#ad0801","#c40b58","#edd1d4","#a83ba0","#509d43","#062f31","#b9c23b","#65e82a","#27da25","#951a12","#56704c","#114573","#ff8dca","#ff8dca","#ff8dca","#d7c468","#3b339b","#946d23","#f88b55","#d3e5bb","#a65e7e","#2f9168","#3cb146","#48cebd","#ac44c3","#3a80a6","#5e8a4a","#d4d7f9","#9783cd","#071c0a","#d2addd","#993367","#4bb784","#e0deef","#9737cb","#7c6a32","#aadd60","#62cc37","#0b20e3","#0efb64","#a59809","#7b0090","#909c6f","#82177c","#eabdf5","#b50087","#7885e8","#77564a","#de45a4","#f9f8d3","#b54287","#877e33","#c3674e","#2b6faa","#16cc8c","#a66f4c","#a17cd4","#efe50f","#0fa4f9","#ab818f","#c2326a","#fdc10b","#9a4ec8","#3bc55b","#be4271","#87825a","#0e4a5a","#dd4d16","#e7a0b4","#9e10a5","#bf350b","#1486ea","#e6fc56","#bbbf49","#c05beb","#95e4e6","#233117","#b5ba27","#4c1067","#ff8ead","#cfbe09","#c83f6e","#2440e0","#40f122","#9c59ac","#-85308","#b431b8","#a3ec71","#346b3e","#750574","#18e05c","#a26d98","#9205a1","#14fda8","#975003","#1d733f","#272f46","#2bdaae","#eb1396","#85dfd0","#65ae6a","#c95885","#26982e",
+                "#1077a6","#f45633","#5b515b","#0d14b4","#174995","#122606","#50d99d","#7a363d","#0f8650","#359183","#666320","#ef84ab","#6392de","#e68ccf","#245573","#96a162","#b39f55","#daeee1","#309376","#ca0691","#cf176f","#0abc5d","#a574ac","#4cd2ed","#da6f33","#e1df1e","#c4fad2","#d233ce","#ef98c9","#5aad85","#083144","#4e1d9b","#10f1e6","#21c66e","#91f26f","#94ff79","#8717c7","#984042","#ead163","#006975","#ab0068","#160be0","#c397fd","#f8dd5c","#fc3638","#116bd8","#d84992","#31d9b6","#172c6f","#04a56f","#2adbdc","#f9620f","#ff96bd","#904804","#9713fc","#112066","#573fc7","#eca01e","#ac2971","#755853", "#00f8fb","#729abc","#3d9bba","#2fbe25","#a4894f","#554752","#34b2ad","#503351","#991d45","#dc4898","#356fe5","#fd3991","#b09127","#ca4262","#7118cd","#b611e1","#983ca0","#e45b1b","#c062c8","#ca8304","#77443e","#d9d349","#4b63cb","#bbaef4","#18fe76","#ad08a3","#17d3f2","#f3bc7b","#d7446f","#8f6192", "#de785d","#edcb90","#876b0f","#c4f6f6","#ab3953","#f80d63","#493b32","#f88b34","#05ffc4","#514cc6","#35de02","#69bc79","#0464cd","#324dcf","#bf7eb3","#10dd04","#ac65f7","#d96743","#e1d1ae","#a751d7","#e57609","#63e669","#b22e0e","#994425","#92f2eb","#130e88","#2c5de5","#4cbada","#971e4f","#960753","#39378f","#bcbda6","#1b943c","#cd1b43","#7ad2d1","#34e3cb","#75ac70","#9d90f2","#1b8cf6","#f56d57","#62d813","#44a30c","#70b3b1","#82d39e","#57f1b7","#8d0b70","#fd543c","#90b98a","#0d1588","#48c0cb","#7f7ec2","#806569","#4d8677","#4b8413","#740133","#5531e3","#dd8b22","#e8c584","#3dd64a","#dc6425",
+                "#814eb0","#d4ea26","#0d14bd","#df6fe1","#007e94","#c38e18","#671019","#e6bbe3","#33d9ec","#dfc796","#aa8c12","#979084","#f2b8f4","#532f9c","#0c9db9","#a3611f","#286558","#26e643","#31cb18","#0e603a","#cd766a","#b72c95","#eaf375","#8345b1","#cd2537","#3d7b6f","#bc16ec","#d545be","#f4ec29","#b30a33", "#9865df","#18bcac","#76189e","#25608b","#86a142","#9734fe","#09d786","#c2dcd1","#9329f6","#ec3b05","#678f07","#f12a9f","#97ee4a","#6c102c","#bbed28","#b43af9","#f79bc9","#2c0940","#cf6920","#3c57e9","#c6d8e3","#669465","#713c32","#5c86b6","#f580f3","#b14146","#80fe48","#e44717","#767967","#e00ab4","#672328","#39c9f0","#ae9f77","#043ef8","#876d95","#4c667b","#974b76","#63ce66","#b52585","#325a93","#b7191e","#5b20fc","#021913","#96114a","#523a3c","#867628","#24e48b","#c31f92","#de5ee6","#481677","#02ceef","#68f2e1","#8224e7","#585638","#aba6d5","#dcb111","#925077","#2e6d5e","#ba0a99","#3f2b2c","#cc24c8","#f795fa","#3ac6e4","#a30cb9","#d894f0","#7f948a","#1b3bac","#97a14a","#affdf4","#e628ad","#890207","#a4a9ce","#581b35","#1a2de9","#c1505f","#69fc8b","#ba1706","#f32eeb","#f06d22","#3748d7","#99acbf","#6083bb","#b8f97c","#78f2f8","#a63974","#8aafe2","#72f320","#be673f","#092ee9","#7fc9fa","#8939ce","#06475d","#e648b4","#1348fe","#a0a4c2","#cc1a22","#49290b","#e2f3f3","#8aa9bb","#dd87c9","#39c249","#873385","#5a521f","#e47199","#871917","#37c17b","#f4edb5","#edc3f6","#772e12","#aa1c80","#76f1fc","#8077d4","#2a56d6","#c84986","#417518","#f78c6b"
+              ])
+
+
+
+
+     
+
+
+
+
+  //zoom 
+  const g = svg.append('g')
+  svg.call(d3.zoom().on('zoom',()=>{g.attr('transform',d3.event.transform)}))
+     
+  //path
+
+      g.selectAll(".subunits")
+      .data(data.features)
+      .enter().append("path")
+      .attr("class","subunits")
+      .attr("d",path)
+      .on('mouseover',function(d)
+                        {
+                            d3.select(this).classed("selected",true)
+
+                         })
+            .on('mouseout',function(d)
+                        {
+                            d3.select(this).classed("selected",false)
+                        })
+
+
+// //slider
+
+// var sliderSimple = d3
+//   .sliderBottom()
+//   .min(1)
+//   .max(839)
+//   .width(300)
+//   .ticks(5)
+//   .on('onchange', val => 
+//   {
+//     //console.log(val)
+
+//     d3.select('p#value-simple').text(val , g.selectAll(".london_stations")
+//     .data(london_stations)
+//     .enter().append("circle")
+//     .filter(function(d) { return d.station_id <= val })
+//     .attr("fill",  function (d) { return color(d.station_id) } )
+//     .attr("class","london_stations")
+//     .attr("r",0.5)
+//     .attr("cx", function(d)
+//                     {
+//                         //console.log(d.station_id)
+//                         var coords = projection([d.longitude,d.latitude])
+//                     // console.log(coords)
+//                         return coords[0]
+//                     })
+//     .attr("cy",function(d)
+//                     {
+//                         //console.log(d)
+//                         var coords = projection([d.longitude,d.latitude])
+//                         //console.log(coords)
+//                         return coords[1]
+//                     })
+//         .on("mouseover", function(d)
+//         {
+//                   var temp=bike_data;
+
+//                   var temp1=[];
+//                   temp1=temp.filter(function(i)
+//                   {
+//                     return i.start_station_id==d.station_id;
+//                   })
+
+//                   //console.log(temp1)
+
+//                   var link = []
+//                   temp1.forEach(function(row)
+//                   {
+//                     source = [+row.end_longitude, +row.end_latitude]
+//                     target = [+row.start_longitude, +row.start_latitude]
+//                     topush = {type: "LineString", coordinates: [source, target]}
+//                     link.push(topush)
+//                   })
+
+                  
+//             // Add the edges path
+
+
+//                   Edges=g.selectAll(".edge")
+//                   .data(link)
+//                   .enter()
+//                   .append("path")
+//                   .attr("class",".edge")
+//                   .attr("d", function(d){ return path(d)})
+//                   .style("fill", "none")
+//                   .style("stroke", () => { let color = '#'+Math.floor(Math.random() * Math.pow(2,32) ^ 0xffffff).toString(16).substr(-6); return color;})
+//                   .style("stroke-width", '0.1px')
+
+//         })
+//         .on("mouseleave", function(d)
+//         {
+//               Edges.remove();
+//         } )
+//         .append('title')
+//         .text(function(d)
+//         {
+//               return d.station_name;
+//         })   
+//         .attr("dx",1)
+//         .attr("dy",1)
+         
+      
+//    );
+                    
+//   });
+
+//   // console.log(val)
+  
+
+// var gSimple = d3
+//   .select('div#slider-simple')
+//   .append('svg')
+//   .attr('width', 500)
+//   .attr('height', 100)
+//   .append('g')
+//   .attr('transform', 'translate(30,30)');
+
+// gSimple.call(sliderSimple);
+
+
+// d3.select('p#value-simple').text((sliderSimple.value()));
+
+
+
+
+
+
+
+//circle
+
+      g.selectAll(".london_stations")
+      .data(london_stations)
+      .enter().append("circle")
+      .attr("fill",  function (d) { return color(d.station_id) } )
+      .attr("class","london_stations")
+      .attr("r",0.4)
+      .attr("cx", function(d)
+                      {
+                          //console.log(d.station_id)
+                          var coords = projection([d.longitude,d.latitude])
+                      // console.log(coords)
+                          return coords[0]
+                      })
+      .attr("cy",function(d)
+                      {
+                          //console.log(d)
+                          var coords = projection([d.longitude,d.latitude])
+                          //console.log(coords)
+                          return coords[1]
+                      })
+          .on("mouseover", function(d)
+          {
+                    var temp=bike_data;
+
+                    var temp1=[];
+                    temp1=temp.filter(function(i)
+                    {
+                      return i.start_station_id==d.station_id;
+                    })
+            
+
+                    //console.log(temp1)
+
+                    var link = []
+                    temp1.forEach(function(row)
+                    {
+                      source = [+row.end_longitude, +row.end_latitude]
+                      target = [+row.start_longitude, +row.start_latitude]
+                      topush = {type: "LineString", coordinates: [source, target]}
+                      link.push(topush)
+                    })
+
+                    
+              // Add the edges path
+  
+
+                    Edges=g.selectAll(".edge")
+                    .data(link)
+                    .enter()
+                    .append("path")
+                    .attr("class",".edge")
+                    .attr("d", function(d){ return path(d)})
+                    .style("fill", "none")
+                    .style("stroke", () => { let color = '#'+Math.floor(Math.random() * Math.pow(2,32) ^ 0xffffff).toString(16).substr(-6); return color;})
+                    .style("stroke-width", '0.1px')
+
+          })
+          .on("mouseleave", function(d)
+          {
+                Edges.remove();
+          } )
+          .append('title')
+          .text(function(d)
+          {
+                return d.station_name;
+          })   
+          .attr("dx",1)
+          .attr("dy",1)  
+    
+
+          
+
+  
+
+
+                  
+
+              
+
+
+
+
+
+  
+
+
+
+
+  }
+  
+})();
+
+
