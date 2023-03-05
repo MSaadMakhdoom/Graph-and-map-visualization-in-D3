@@ -15,7 +15,7 @@
 - Visual filter to let the user select timeline.
 
 # All the visualizations in the dashboard  fully interactive (i.e. panning, zooming, selection etc.)
-# The visualizations need to be linked via brushing and linking.
+# The visualizations linked  brushing and linking.
 
 
 
